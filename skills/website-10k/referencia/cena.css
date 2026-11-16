@@ -1,0 +1,342 @@
+/* Trechos do src/index.css da LP de referência ligados às cenas, às entradas e à abertura de marca.
+   Copiados sem alteração (prefixo lp-). Troque as cores pelos tokens da sua marca. */
+
+/* curvas de movimento */
+:root {
+  --lp-ease: cubic-bezier(0.4, 0, 0.1, 1);
+  --lp-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --lp-ease-btn: cubic-bezier(0.35, 0, 0, 1);
+}
+/* texto sobre vídeo: sombra real, além do scrim local */
+.lp-over-video {
+  text-shadow: 0 2px 24px rgba(18, 19, 21, 0.75), 0 1px 2px rgba(18, 19, 21, 0.6);
+}
+
+/* entrada suave: tudo que tem data-reveal sobe e aparece quando chega na tela */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+  transition: opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1), transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--d, 0ms);
+}
+.js [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* frase do manifesto que acende palavra por palavra conforme o scroll */
+.js .lp-manifesto span {
+  opacity: 0.16;
+  transition: opacity 0.4s ease;
+}
+@media (max-width: 899px) {
+  .js .lp-manifesto span {
+    opacity: 0.3; /* no celular o trecho ainda apagado continua legível */
+  }
+}
+.lp-manifesto span.on {
+  opacity: 1;
+}
+
+/* caixa com o mesmo enquadramento do vídeo em object-cover 16:9: o que for posicionado
+   em % dentro dela cai no mesmo ponto do quadro, em qualquer janela */
+.lp-cover {
+  left: 50%;
+  top: 50%;
+  width: max(100%, 177.78svh);
+  aspect-ratio: 16 / 9;
+  transform: translate(-50%, -50%);
+}
+
+/* linhas SVG que se desenham */
+.lp-draw {
+  stroke-dasharray: var(--len, 1000);
+  stroke-dashoffset: var(--len, 1000);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .js .lp-manifesto span {
+    opacity: 1;
+  }
+  .lp-draw {
+    stroke-dashoffset: 0 !important;
+  }
+}
+
+/* ---------- dinâmica das entradas ---------- */
+
+/* títulos: cada palavra sobe de dentro de uma máscara, uma depois da outra */
+/* a máscara sobra em volta da palavra (padding) e devolve o espaço (margem negativa): o layout não muda e nenhum
+   acento, rabo de letra ou itálico é cortado */
+.lp-w {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0.16em 0.12em 0.22em;
+  margin: -0.16em -0.12em -0.22em;
+}
+.lp-wi {
+  display: inline-block;
+}
+.js .lp-wi {
+  transform: translate3d(0, 145%, 0);
+  transition: transform 1s var(--lp-ease-out);
+  transition-delay: calc(var(--i, 0) * 55ms);
+}
+.js .is-in .lp-wi,
+.js .is-in.lp-wi {
+  transform: none;
+}
+
+/* caça-níquel: cada caractere é uma coluna que rola até o valor final */
+.lp-rc {
+  position: relative;
+  display: inline-block;
+  height: 1em;
+  line-height: 1;
+  overflow: hidden;
+  vertical-align: top;
+}
+.lp-rc-medida {
+  visibility: hidden;
+}
+.lp-rl {
+  position: absolute;
+  inset: 0 auto auto 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  translate: -50% 0;
+}
+.lp-rl > span {
+  display: block;
+  height: 1em;
+}
+.js .lp-rl {
+  transition: transform 1.4s var(--lp-ease-out);
+  transition-delay: calc(var(--i, 0) * 45ms);
+}
+.js .is-in .lp-rl {
+  transform: translate3d(0, -75%, 0);
+}
+html:not(.js) .lp-rl {
+  transform: translate3d(0, -75%, 0);
+}
+
+
+/* conteúdo que só aparece com a cena parada no último quadro (ex.: telas reais do produto dentro da cena) */
+.lp-no-fim {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.6s var(--lp-ease), visibility 0s linear 0.6s;
+}
+[data-fim="1"] .lp-no-fim {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.6s var(--lp-ease);
+}
+
+/* fim da cena: aparece a instrução para continuar (a cena fica em tela cheia) */
+.lp-continuar {
+  opacity: 0;
+  transform: translate3d(0, 10px, 0);
+  transition: opacity 0.5s var(--lp-ease), transform 0.5s var(--lp-ease);
+}
+.lp-cena[data-fim="1"] > .lp-continuar {
+  opacity: 0.9;
+  transform: none;
+  transition-delay: 0.5s;
+}
+.lp-continuar-seta {
+  animation: lp-seta 1.6s var(--lp-ease) infinite;
+}
+@keyframes lp-seta {
+  0%, 100% { transform: translate3d(0, -2px, 0); }
+  50% { transform: translate3d(0, 4px, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-continuar-seta { animation: none; }
+}
+
+/* portal entre página e vídeo (ou foto, no celular): a cena aparece por um círculo de borda macia que cresce do ponto do fio */
+/* a máscara fica sempre aplicada (aberta = 100% opaca): ligar e desligar a máscara recria a camada do vídeo e dá tremida */
+.lp-cena[data-portal] > .lp-cena-frame {
+  /* círculo do portal + bordas de cima e de baixo dissolvidas no grafite (as duas máscaras se somam) */
+  -webkit-mask-image:
+    radial-gradient(circle at 50% var(--oy, 0%), #000 calc(var(--r, 170) * 1vmax - 6vmax), transparent calc(var(--r, 170) * 1vmax)),
+    linear-gradient(to bottom, transparent 0, #000 var(--ft, 0px), #000 calc(100% - var(--fb, 0px)), transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    radial-gradient(circle at 50% var(--oy, 0%), #000 calc(var(--r, 170) * 1vmax - 6vmax), transparent calc(var(--r, 170) * 1vmax)),
+    linear-gradient(to bottom, transparent 0, #000 var(--ft, 0px), #000 calc(100% - var(--fb, 0px)), transparent 100%);
+  mask-composite: intersect;
+}
+.lp-cena[data-portal="abrindo"] > .lp-portal-anel {
+  background: radial-gradient(
+    circle at 50% var(--oy, 0%),
+    transparent calc(var(--r, 170) * 1vmax - 2.6vmax),
+    rgba(90, 139, 255, 0.55) calc(var(--r, 170) * 1vmax - 1.6vmax),
+    rgba(53, 110, 243, 0.18) calc(var(--r, 170) * 1vmax),
+    transparent calc(var(--r, 170) * 1vmax + 1.2vmax)
+  );
+}
+/* Lenis: as regras da folha oficial (lenis/dist/lenis.css), menos o "overflow: clip" de quando ele para:
+   as cenas em vídeo param o Lenis e a barra de rolagem sumiria, puxando a página para o lado.
+   E a página não "corrige" sozinha a posição quando algo acima muda de tamanho (o Lenis puxava de volta: tranco para trás) */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+html.lenis {
+  overflow-anchor: none;
+}
+.lenis [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* o fio de luz brilha inteiro nas margens e fica mais discreto quando passa atrás da coluna de texto
+   (só no desktop: no celular a máscara numa SVG da altura da página inteira pesa a cada quadro) */
+@media (min-width: 1024px) {
+  .lp-fio {
+    -webkit-mask-image: linear-gradient(90deg, #000 0, #000 var(--lp-margem), rgba(0, 0, 0, 0.55) calc(var(--lp-margem) + 80px), rgba(0, 0, 0, 0.55) calc(100% - var(--lp-margem) - 80px), #000 calc(100% - var(--lp-margem)), #000 100%);
+    mask-image: linear-gradient(90deg, #000 0, #000 var(--lp-margem), rgba(0, 0, 0, 0.55) calc(var(--lp-margem) + 80px), rgba(0, 0, 0, 0.55) calc(100% - var(--lp-margem) - 80px), #000 calc(100% - var(--lp-margem)), #000 100%);
+  }
+}
+/* a instrução "role para continuar" sai assim que a cena começa a deixar a tela */
+.lp-cena[data-portal="abrindo"] > .lp-continuar,
+.lp-cena[data-portal="fechado"] > .lp-continuar {
+  opacity: 0;
+  transition-delay: 0s;
+}
+/* o anel de luz do portal acompanha as mesmas bordas macias da cena (sem corte reto na beirada) */
+.lp-portal-anel {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 var(--ft, 0px), #000 calc(100% - var(--fb, 0px)), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 var(--ft, 0px), #000 calc(100% - var(--fb, 0px)), transparent 100%);
+}
+
+/* Safari do iPhone: máscara em área de tela cheia é cara e era recomposta a cada quadro da rolagem.
+   No celular a máscara só existe durante a transição: cena aberta e palco parado ficam sem máscara
+   (a cena fechada mantém a máscara, que é o que a esconde) */
+@media (max-width: 899px) {
+  .lp-cena[data-portal="aberto"] > .lp-cena-frame,
+  .lp-cena:not([data-portal="abrindo"]) > .lp-portal-anel,
+  .lp-expand .sticky:not([data-saindo]) {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
+
+/* fotos das cenas no celular: bordas dissolvidas no fundo (máscara fixa, nunca recalculada: sem corte reto e sem custo na rolagem)
+   e o portal que abre sozinho quando a foto chega na tela (círculo a partir do centro do topo + anel de luz) */
+@media (max-width: 899px) {
+  .lp-foto {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 12%, #000 76%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 12%, #000 76%, transparent 100%);
+  }
+  .lp-foto--bloco {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 18%, #000 56%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 18%, #000 56%, transparent 100%);
+  }
+  .lp-foto-anel {
+    overflow: hidden;
+  }
+  .lp-foto-anel > span {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: var(--anel, 300%);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1.5px solid rgba(90, 139, 255, 0.8);
+    box-shadow: 0 0 28px rgba(53, 110, 243, 0.55), inset 0 0 28px rgba(53, 110, 243, 0.3);
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+}
+@media (max-width: 899px) and (prefers-reduced-motion: no-preference) {
+  .js .lp-foto {
+    clip-path: circle(0% at 50% 0%);
+    transition: clip-path 1.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .js .lp-foto[data-aberto] {
+    clip-path: circle(150% at 50% 0%);
+  }
+  .lp-foto-anel[data-aberto] > span {
+    animation: lp-anel-cresce 1.3s cubic-bezier(0.16, 1, 0.3, 1) both, lp-anel-some 1.3s linear both;
+  }
+}
+@keyframes lp-anel-cresce {
+  from { transform: translate(-50%, -50%) scale(0); }
+  to { transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes lp-anel-some {
+  0% { opacity: 0; }
+  8% { opacity: 1; }
+  60% { opacity: 0.9; }
+  100% { opacity: 0; }
+}
+
+/* abertura de marca no topo (TopoExemplo.tsx): cada letra do logo se desenha como um fio de luz e o logo acende na cor de destaque.
+   Sem JavaScript ou com "reduzir movimento" o logo aparece pronto */
+.lp-marca-desenho {
+  filter: drop-shadow(0 0 14px rgba(53, 110, 243, 0.4));
+}
+@media (prefers-reduced-motion: no-preference) {
+  .js .lp-marca-hero path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  .js .lp-marca-hero .lp-marca-desenho {
+    filter: none;
+  }
+  .js .lp-marca-hero .lp-marca-linha {
+    opacity: 0;
+  }
+  .js .is-in.lp-marca-hero path,
+  .js .is-in .lp-marca-hero path {
+    animation: lp-marca-traco 0.9s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+    animation-delay: calc(0.25s + var(--i) * 0.16s);
+  }
+  .js .is-in.lp-marca-hero .lp-marca-desenho,
+  .js .is-in .lp-marca-hero .lp-marca-desenho {
+    animation: lp-marca-acende 1.6s ease-out 1.65s forwards;
+  }
+  .js .is-in.lp-marca-hero .lp-marca-linha,
+  .js .is-in .lp-marca-hero .lp-marca-linha {
+    animation: lp-marca-linha 1s cubic-bezier(0.16, 1, 0.3, 1) 1.75s forwards;
+  }
+}
+@keyframes lp-marca-traco {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes lp-marca-acende {
+  0% { filter: drop-shadow(0 0 0 rgba(53, 110, 243, 0)); }
+  40% { filter: drop-shadow(0 0 26px rgba(90, 139, 255, 0.9)); }
+  100% { filter: drop-shadow(0 0 14px rgba(53, 110, 243, 0.4)); }
+}
+@keyframes lp-marca-linha {
+  from { opacity: 0; transform: translateY(8px); letter-spacing: 0.4em; }
+  to { opacity: 1; transform: none; }
+}
+
+/* topo no computador enquanto a página ainda decide entre vídeo e foto (ScrollVideo marca data-pendente):
+   fica só o primeiro quadro do vídeo, sem o título do modo estático e sem o menu (que some na cena).
+   Assim o reload não pisca a tela antiga antes do logo se desenhar. Sem JavaScript ou com "reduzir movimento" nada muda */
+@media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
+  .js #topo[data-pendente] .lp-cena-estatico {
+    visibility: hidden;
+  }
+  .js:has(#topo[data-pendente]) .lp-cabecalho {
+    opacity: 0;
+    translate: 0 -140%;
+  }
+}
+

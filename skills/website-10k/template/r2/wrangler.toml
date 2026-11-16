@@ -1,0 +1,8 @@
+# Cloudflare Pages. Troque name pelo projeto do Pages e bucket_name pelo bucket da marca. A mídia (imagens e vídeos originais) mora no R2 e é entregue por functions/assets/[[path]].ts.
+name = "<projeto-pages>"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-10-01"
+
+[[r2_buckets]]
+binding = "MIDIA"
+bucket_name = "<marca>-lp-midia"

@@ -1,0 +1,23 @@
+# Repositório de uma LP (modelo da skill website-10k)
+
+# segredos e configs locais: nunca sobem
+.env
+.env.*
+*.local
+*.local.*
+client_secret*.json
+credentials/
+.claude/settings.local.json
+
+# gerado pelo build
+app/node_modules/
+app/dist/
+app/dist-ssr/
+app/.wrangler/
+
+# brutos e revisões: ficam fora do Git por padrão (vídeos brutos passam de centenas de MB).
+# Se o dono quiser os brutos versionados, apague a linha abaixo (e considere Git LFS).
+review/
+*.zip
+.playwright-mcp/
+.playwright-cli/

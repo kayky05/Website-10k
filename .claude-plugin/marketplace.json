@@ -1,0 +1,15 @@
+{
+  "name": "website-10k",
+  "owner": { "name": "kayky05" },
+  "metadata": {
+    "description": "A skill Website 10k para criar landing pages de nível agência com IA."
+  },
+  "plugins": [
+    {
+      "name": "website-10k",
+      "source": "./",
+      "description": "Landing pages de nível agência com IA: cenas em vídeo que tocam com a rolagem, a marca na primeira tela, celular tratado à parte e publicação no Cloudflare.",
+      "version": "1.0.0"
+    }
+  ]
+}

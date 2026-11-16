@@ -1,0 +1,8 @@
+{
+  "name": "website-10k",
+  "version": "1.0.0",
+  "description": "Landing pages de nível agência com IA: cenas em vídeo que tocam com a rolagem, a marca na primeira tela, celular tratado à parte e publicação no Cloudflare.",
+  "author": { "name": "kayky05" },
+  "repository": "https://github.com/kayky05/Website-10k",
+  "keywords": ["landing-page", "website", "react", "tailwind", "higgsfield", "cloudflare", "pt-BR"]
+}
